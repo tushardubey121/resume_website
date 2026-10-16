@@ -5,8 +5,18 @@ import 'package:resume_website/widgets/common/ui_kit.dart';
 import 'package:resume_website/widgets/section_header.dart';
 
 const _months = [
-  'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-  'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+  'Jan',
+  'Feb',
+  'Mar',
+  'Apr',
+  'May',
+  'Jun',
+  'Jul',
+  'Aug',
+  'Sep',
+  'Oct',
+  'Nov',
+  'Dec',
 ];
 
 String _formatMonth(DateTime d) => '${_months[d.month - 1]} ${d.year}';
@@ -45,7 +55,8 @@ class ExperienceSection extends StatelessWidget {
             const Hairline(),
             _Row(
               rail: _Rail(
-                primary: '${_formatMonth(item.start)} — '
+                primary:
+                    '${_formatMonth(item.start)} — '
                     '${item.end == null ? 'Present' : _formatMonth(item.end!)}',
                 secondary: _duration(item.start, item.end),
               ),
@@ -85,7 +96,11 @@ class _Row extends StatelessWidget {
         padding: EdgeInsets.symmetric(vertical: vertical),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: [rail, const SizedBox(height: Space.md), child],
+          children: [
+            rail,
+            const SizedBox(height: Space.md),
+            child,
+          ],
         ),
       );
     }
@@ -146,7 +161,10 @@ class _Role extends StatelessWidget {
                 text: item.company,
                 style: context.h4.copyWith(color: AppColors.accent),
               ),
-              TextSpan(text: '   ${item.companyContext}', style: context.bodySmall),
+              TextSpan(
+                text: '   ${item.companyContext}',
+                style: context.bodySmall,
+              ),
             ],
           ),
         ),

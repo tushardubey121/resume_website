@@ -19,7 +19,7 @@ class HeroSection extends StatelessWidget {
   Widget build(BuildContext context) {
     final profile = ResumeData.profile;
     final phone = context.isPhone;
-    final years = profile.yearsOfExperience;
+    final years = profile.experience;
     final topInset = phone ? 104.0 : 152.0;
 
     return PageSection(
@@ -58,7 +58,7 @@ class HeroSection extends StatelessWidget {
             child: ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 660),
               child: Text(
-                'I’m ${profile.name}, a Flutter engineer with $years+ years of '
+                'I’m ${profile.name}, a Flutter engineer with $years years of '
                 'shipping Android, iOS and web apps. At Spice Money I build the '
                 'Adhikari agent app and B2B portal (AePS, BBPS bill payments, '
                 'eKYC and insurance) and migrated two production web portals '
@@ -186,7 +186,7 @@ class _Actions extends StatelessWidget {
 
 /// Verified facts only. No counters, no invented metrics.
 class _SpecStrip extends StatelessWidget {
-  final int years;
+  final String years;
   final int since;
 
   const _SpecStrip({required this.years, required this.since});
@@ -194,8 +194,16 @@ class _SpecStrip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final facts = [
-      Fact(label: 'Experience', value: '$years+ years', detail: 'Flutter since $since'),
-      const Fact(label: 'Currently', value: 'Spice Money', detail: 'Associate Manager'),
+      Fact(
+        label: 'Experience',
+        value: '$years years',
+        detail: 'Flutter since $since',
+      ),
+      const Fact(
+        label: 'Currently',
+        value: 'Spice Money',
+        detail: 'Associate Manager',
+      ),
       const Fact(
         label: 'Platforms',
         value: 'Android · iOS · Web',

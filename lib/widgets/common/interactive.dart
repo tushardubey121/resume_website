@@ -4,11 +4,8 @@ import 'package:resume_website/theme/app_theme.dart';
 import 'package:url_launcher/link.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-typedef InteractiveBuilder = Widget Function(
-  BuildContext context,
-  bool hovered,
-  bool focused,
-);
+typedef InteractiveBuilder =
+    Widget Function(BuildContext context, bool hovered, bool focused);
 
 /// Hover, focus ring, keyboard activation and pointer cursor for any tappable
 /// element. Use this instead of a bare GestureDetector.

@@ -58,7 +58,11 @@ class SectionHeader extends StatelessWidget {
     if (context.isCompact) {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [eyebrow, const SizedBox(height: Space.lg), body],
+        children: [
+          eyebrow,
+          const SizedBox(height: Space.lg),
+          body,
+        ],
       );
     }
 

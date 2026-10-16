@@ -79,11 +79,12 @@ class _HomePageState extends State<HomePage> {
       final box = _sectionKeys[id]?.currentContext?.findRenderObject();
       if (box is! RenderBox) return;
       final navHeight = context.isPhone ? SiteNav.phoneHeight : SiteNav.height;
-      offset = (_scrollController.offset +
-              box.localToGlobal(Offset.zero).dy -
-              navHeight +
-              1)
-          .clamp(0.0, _scrollController.position.maxScrollExtent);
+      offset =
+          (_scrollController.offset +
+                  box.localToGlobal(Offset.zero).dy -
+                  navHeight +
+                  1)
+              .clamp(0.0, _scrollController.position.maxScrollExtent);
     }
     if (duration == Duration.zero) {
       _scrollController.jumpTo(offset);

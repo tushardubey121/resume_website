@@ -120,9 +120,17 @@ class _Toolbox extends StatelessWidget {
                   ? Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(group.label.toUpperCase(), style: context.eyebrow.copyWith(color: AppColors.inkSubtle)),
+                        Text(
+                          group.label.toUpperCase(),
+                          style: context.eyebrow.copyWith(
+                            color: AppColors.inkSubtle,
+                          ),
+                        ),
                         const SizedBox(height: Space.xs + 2),
-                        Text(group.items.join('  ·  '), style: context.body.copyWith(color: AppColors.ink)),
+                        Text(
+                          group.items.join('  ·  '),
+                          style: context.body.copyWith(color: AppColors.ink),
+                        ),
                       ],
                     )
                   : Row(
@@ -134,7 +142,9 @@ class _Toolbox extends StatelessWidget {
                             padding: const EdgeInsets.only(top: 3),
                             child: Text(
                               group.label.toUpperCase(),
-                              style: context.eyebrow.copyWith(color: AppColors.inkSubtle),
+                              style: context.eyebrow.copyWith(
+                                color: AppColors.inkSubtle,
+                              ),
                             ),
                           ),
                         ),

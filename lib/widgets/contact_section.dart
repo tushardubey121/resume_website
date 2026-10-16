@@ -164,26 +164,31 @@ class _Footer extends StatelessWidget {
     return SizedBox(
       width: double.infinity,
       child: Wrap(
-      alignment: WrapAlignment.spaceBetween,
-      spacing: Space.xl,
-      runSpacing: Space.md,
-      crossAxisAlignment: WrapCrossAlignment.center,
-      children: [
-        Text('© ${DateTime.now().year} ${profile.name}', style: style),
-        Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Flexible(child: Text('Designed and built with Flutter Web.  ', style: style)),
-            TextLink(
-              label: 'Source',
-              uri: Uri.parse(profile.sourceUrl),
-              style: style,
-              color: AppColors.nightMuted,
-              hoverColor: AppColors.nightAccent,
-            ),
-          ],
-        ),
-      ],
+        alignment: WrapAlignment.spaceBetween,
+        spacing: Space.xl,
+        runSpacing: Space.md,
+        crossAxisAlignment: WrapCrossAlignment.center,
+        children: [
+          Text('© ${DateTime.now().year} ${profile.name}', style: style),
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Flexible(
+                child: Text(
+                  'Designed and built with Flutter Web.  ',
+                  style: style,
+                ),
+              ),
+              TextLink(
+                label: 'Source',
+                uri: Uri.parse(profile.sourceUrl),
+                style: style,
+                color: AppColors.nightMuted,
+                hoverColor: AppColors.nightAccent,
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }

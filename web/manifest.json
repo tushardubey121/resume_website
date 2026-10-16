@@ -3,10 +3,10 @@
     "short_name": "Tushar Dubey",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#071A1C",
-    "theme_color": "#071A1C",
-    "description": "Flutter developer portfolio — Tushar Dubey",
-    "orientation": "portrait-primary",
+    "background_color": "#F6F5F1",
+    "theme_color": "#F6F5F1",
+    "description": "Tushar Dubey, Flutter engineer. Portfolio of production mobile and web work.",
+    "orientation": "any",
     "prefer_related_applications": false,
     "icons": [
         {

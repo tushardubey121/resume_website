@@ -17,11 +17,12 @@ class ProjectsSection extends StatelessWidget {
           const SectionHeader(
             index: '01',
             label: 'Selected work',
-            title: 'Production apps, from regulated banking to connected hardware.',
+            title:
+                'Production apps, from regulated banking to connected hardware.',
             intro:
-                'Two case studies from my current and past roles, followed by '
-                'apps I delivered for clients. Images are the products’ own '
-                'store artwork and brand marks.',
+                'Two case studies from my work at Spice Money, followed by apps '
+                'I delivered for clients. Images are the products’ own store '
+                'artwork and brand marks.',
           ),
           SizedBox(height: context.sectionGap),
           for (var i = 0; i < featured.length; i++) ...[
@@ -150,7 +151,10 @@ class _CaseStudyContent extends StatelessWidget {
         ],
         if (project.stack.isNotEmpty) ...[
           const SizedBox(height: Space.x2),
-          Text('STACK', style: context.eyebrow.copyWith(color: AppColors.inkSubtle)),
+          Text(
+            'STACK',
+            style: context.eyebrow.copyWith(color: AppColors.inkSubtle),
+          ),
           const SizedBox(height: Space.md),
           TagWrap(project.stack),
         ],
@@ -174,15 +178,9 @@ class _FactRow extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.symmetric(vertical: Space.lg),
       decoration: const BoxDecoration(
-        border: Border.symmetric(
-          horizontal: BorderSide(color: AppColors.line),
-        ),
+        border: Border.symmetric(horizontal: BorderSide(color: AppColors.line)),
       ),
-      child: Wrap(
-        spacing: Space.x2,
-        runSpacing: Space.lg,
-        children: facts,
-      ),
+      child: Wrap(spacing: Space.x2, runSpacing: Space.lg, children: facts),
     );
   }
 }
@@ -305,29 +303,39 @@ class _ProjectGrid extends StatelessWidget {
     final gap = context.isDesktop ? Space.x2 : Space.xl;
     final rows = <Widget>[];
     for (var i = 0; i < projects.length; i += 2) {
-      final second = i + 1 < projects.length;
+      if (rows.isNotEmpty) rows.add(SizedBox(height: gap));
+      if (i + 1 == projects.length) {
+        rows.add(
+          _ProjectCard(
+            project: projects[i],
+            figure: figureOffset + i,
+            wide: true,
+          ),
+        );
+        break;
+      }
       rows.add(
         IntrinsicHeight(
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Expanded(
-                child: _ProjectCard(project: projects[i], figure: figureOffset + i),
+                child: _ProjectCard(
+                  project: projects[i],
+                  figure: figureOffset + i,
+                ),
               ),
               SizedBox(width: gap),
               Expanded(
-                child: second
-                    ? _ProjectCard(
-                        project: projects[i + 1],
-                        figure: figureOffset + i + 1,
-                      )
-                    : const SizedBox.shrink(),
+                child: _ProjectCard(
+                  project: projects[i + 1],
+                  figure: figureOffset + i + 1,
+                ),
               ),
             ],
           ),
         ),
       );
-      if (i + 2 < projects.length) rows.add(SizedBox(height: gap));
     }
     return Column(children: rows);
   }
@@ -337,7 +345,14 @@ class _ProjectCard extends StatefulWidget {
   final ProjectItem project;
   final int figure;
 
-  const _ProjectCard({required this.project, required this.figure});
+  /// Full-width horizontal layout, used for an unpaired last card.
+  final bool wide;
+
+  const _ProjectCard({
+    required this.project,
+    required this.figure,
+    this.wide = false,
+  });
 
   @override
   State<_ProjectCard> createState() => _ProjectCardState();
@@ -348,7 +363,6 @@ class _ProjectCardState extends State<_ProjectCard> {
 
   @override
   Widget build(BuildContext context) {
-    final p = widget.project;
     final pad = context.isPhone ? Space.lg + 4 : Space.xl;
 
     return MouseRegion(
@@ -364,60 +378,92 @@ class _ProjectCardState extends State<_ProjectCard> {
             color: _hovered ? AppColors.lineStrong : AppColors.line,
           ),
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(6),
-              child: _Plate(
-                visual: p.visual,
-                figure: widget.figure,
-                hovered: _hovered,
-                showCaption: false,
-                radius: const BorderRadius.all(Radius.circular(6)),
-              ),
-            ),
-            Expanded(
-              flex: context.isPhone ? 0 : 1,
-              child: Padding(
-                padding: EdgeInsets.fromLTRB(pad, Space.lg, pad, pad),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(p.category.toUpperCase(), style: context.eyebrow),
-                    const SizedBox(height: Space.sm),
-                    Heading(p.name, level: 4, style: context.h3),
-                    const SizedBox(height: Space.md),
-                    Text(p.summary, style: context.body),
-                    const SizedBox(height: Space.lg),
-                    Text(
-                      [
-                        'Built at ${p.builtAt}',
-                        if (p.platforms.isNotEmpty) p.platforms.join(' · '),
-                      ].join('  ·  '),
-                      style: context.monoSmall,
-                    ),
-                    if (p.stack.isNotEmpty) ...[
-                      const SizedBox(height: Space.md),
-                      TagWrap(p.stack),
-                    ],
-                    if (!context.isPhone) const Spacer(),
-                    if (p.links.isNotEmpty || p.note != null)
-                      const SizedBox(height: Space.xl),
-                    if (p.links.isNotEmpty) _Links(p.links),
-                    if (p.note != null)
-                      Text(
-                        p.note!,
-                        style: context.bodySmall.copyWith(fontStyle: FontStyle.italic),
-                      ),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
+        child: widget.wide
+            ? _wideLayout(context, pad)
+            : _stackedLayout(context, pad),
       ),
+    );
+  }
+
+  Widget _plate() => Padding(
+    padding: const EdgeInsets.all(6),
+    child: _Plate(
+      visual: widget.project.visual,
+      figure: widget.figure,
+      hovered: _hovered,
+      showCaption: false,
+      radius: const BorderRadius.all(Radius.circular(6)),
+    ),
+  );
+
+  Widget _stackedLayout(BuildContext context, double pad) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _plate(),
+        Expanded(
+          flex: context.isPhone ? 0 : 1,
+          child: Padding(
+            padding: EdgeInsets.fromLTRB(pad, Space.lg, pad, pad),
+            child: _details(context, fill: !context.isPhone),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _wideLayout(BuildContext context, double pad) {
+    return IntrinsicHeight(
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Expanded(
+            child: Align(alignment: Alignment.topCenter, child: _plate()),
+          ),
+          Expanded(
+            child: Padding(
+              padding: EdgeInsets.fromLTRB(pad, pad, pad + Space.sm, pad),
+              child: _details(context, fill: true),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _details(BuildContext context, {required bool fill}) {
+    final p = widget.project;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(p.category.toUpperCase(), style: context.eyebrow),
+        const SizedBox(height: Space.sm),
+        Heading(p.name, level: 4, style: context.h3),
+        const SizedBox(height: Space.md),
+        Text(p.summary, style: context.body),
+        const SizedBox(height: Space.lg),
+        Text(
+          [
+            'Built at ${p.builtAt}',
+            if (p.platforms.isNotEmpty) p.platforms.join(' · '),
+          ].join('  ·  '),
+          style: context.monoSmall,
+        ),
+        if (p.stack.isNotEmpty) ...[
+          const SizedBox(height: Space.md),
+          TagWrap(p.stack),
+        ],
+        if (fill) const Spacer(),
+        if (p.links.isNotEmpty || p.note != null)
+          const SizedBox(height: Space.xl),
+        if (p.links.isNotEmpty) _Links(p.links),
+        if (p.note != null)
+          Text(
+            p.note!,
+            style: context.bodySmall.copyWith(fontStyle: FontStyle.italic),
+          ),
+      ],
     );
   }
 }

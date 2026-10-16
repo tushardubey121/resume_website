@@ -31,16 +31,13 @@ class ProfileInfo {
     required this.githubUrl,
     required this.sourceUrl,
     required this.careerStart,
+    required this.experience,
     required this.resumePath,
     this.availability,
   });
 
-  int get yearsOfExperience {
-    final now = DateTime.now();
-    var months = (now.year - careerStart.year) * 12 + now.month - careerStart.month;
-    if (now.day < careerStart.day) months--;
-    return months ~/ 12;
-  }
+  /// Displayed experience, e.g. "8+".
+  final String experience;
 }
 
 class ExperienceItem {
@@ -172,6 +169,7 @@ abstract final class ResumeData {
     githubUrl: 'https://github.com/tushardubey121',
     sourceUrl: 'https://github.com/tushardubey121/resume_website',
     careerStart: DateTime(2019, 2),
+    experience: '8+',
     availability: 'Open to senior Flutter and mobile roles',
     resumePath: 'resume/Tushar_Dubey_Resume.pdf',
   );
@@ -187,7 +185,7 @@ abstract final class ResumeData {
         'Build and ship features for the Spice Money Adhikari app and spicemoney.com, used by banking agents across rural and semi-urban India.',
         'Delivered AePS, BBPS bill payment, KYC/eKYC and insurance journeys across the Android app and the B2B web portal.',
         'Migrated the Adhikari and Travel Union portals to Flutter and optimised them for performance.',
-        'Reworked the Travel Union portal to improve its user experience.',
+        'Built the Travel Union B2B booking app and reworked its portal to improve the user experience.',
       ],
     ),
     ExperienceItem(
@@ -209,7 +207,7 @@ abstract final class ResumeData {
       end: DateTime(2021, 8),
       highlights: const [
         'Built and maintained Flutter apps across video calling, fitness, logistics and social media.',
-        'Delivered TheSkinDeep, Foodaholix, Travel Union and Zips Cannabis.',
+        'Delivered TheSkinDeep, Foodaholix, Zips Cannabis, Haulink, Journies and Argo Texas Group.',
       ],
     ),
   ];
@@ -264,10 +262,9 @@ abstract final class ResumeData {
       category: 'B2B travel · Booking platform',
       summary:
           'A one-stop booking platform for travel agents covering flights, trains, buses, hotels and holiday packages.',
-      builtAt: 'Techahead, then Spice Money',
+      builtAt: 'Spice Money',
+      period: '2022 — present',
       platforms: ['Android', 'Web portal'],
-      story:
-          'I worked on Travel Union twice. At Techahead I delivered the B2B booking app. Later, at Spice Money, I reworked the Travel Union portal to improve its user experience and migrated it to Flutter.',
       contributions: [
         'B2B booking app for flights, trains, buses, hotels and holiday packages.',
         'Portal UX rework and migration to Flutter, optimised for performance.',
@@ -298,6 +295,7 @@ abstract final class ResumeData {
       summary:
           'Companion app for the Teplo connected tea pot. Users set up the device and control brewing over Bluetooth LE, pick a brew to suit their mood, and subscribe to teas.',
       builtAt: 'Valuecoders',
+      platforms: ['Android', 'iOS'],
       stack: ['Flutter', 'Bluetooth LE'],
       visual: ProjectVisual(
         asset: 'assets/images/projects/teplo_cover.webp',
@@ -312,6 +310,10 @@ abstract final class ResumeData {
         ProjectLink(
           'Google Play',
           'https://play.google.com/store/apps/details?id=com.loadandroad.teplo.android',
+        ),
+        ProjectLink(
+          'App Store',
+          'https://apps.apple.com/us/app/teplo-tea-pot-for-tea-brewing/id1526640782',
         ),
       ],
     ),
@@ -341,6 +343,12 @@ abstract final class ResumeData {
         semanticLabel:
             'Foodaholix app artwork showing a user profile with recent dish reviews',
       ),
+      links: [
+        ProjectLink(
+          'App Store',
+          'https://apps.apple.com/us/app/food-rating-app-foodaholix/id1587747643',
+        ),
+      ],
     ),
     ProjectItem(
       id: 'zips',
@@ -349,6 +357,7 @@ abstract final class ResumeData {
       summary:
           'Loyalty app where customers earn points on purchases at Zips stores and redeem them later.',
       builtAt: 'Techahead',
+      platforms: ['Android', 'iOS'],
       stack: ['Flutter', 'Firebase'],
       visual: ProjectVisual(
         asset: 'assets/images/projects/zips_cover.webp',
@@ -363,6 +372,10 @@ abstract final class ResumeData {
           'Google Play',
           'https://play.google.com/store/apps/details?id=com.app.zipsloyalty',
         ),
+        ProjectLink(
+          'App Store',
+          'https://apps.apple.com/us/app/zips-cannabis-wa/id1555738396',
+        ),
       ],
     ),
     ProjectItem(
@@ -373,7 +386,7 @@ abstract final class ResumeData {
           'Video calling app built around a card game. Users play cards from their chosen deck during a call or locally, and buy play counts through in-app subscriptions.',
       builtAt: 'Techahead',
       stack: ['Flutter', 'Video calling', 'In-app subscriptions'],
-      note: 'No longer listed on Google Play',
+      note: 'No longer listed on Google Play or the App Store',
       visual: ProjectVisual(
         asset: 'assets/images/projects/skindeep_cover.webp',
         aspectRatio: 16 / 10,
@@ -382,6 +395,76 @@ abstract final class ResumeData {
         caption: 'The Skin Deep studio set',
         semanticLabel: 'Two chairs facing each other on a rug in a film studio',
       ),
+    ),
+    ProjectItem(
+      id: 'haulink',
+      name: 'Haulink',
+      category: 'Logistics · Gig marketplace',
+      summary:
+          'A platform for truck owners and drivers to choose the transportation jobs they want, built for BT Trucking, a long-established transportation company in Chicago.',
+      builtAt: 'Techahead',
+      stack: ['Flutter'],
+      visual: ProjectVisual(
+        asset: 'assets/images/projects/haulink_cover.webp',
+        aspectRatio: 16 / 10,
+        background: AppColors.plateHaulink,
+        caption: 'Haulink app screens, from Techahead’s case study',
+        semanticLabel:
+            'Haulink app screens showing a driver profile, a job transfer form and settings',
+      ),
+      links: [
+        ProjectLink(
+          'Case study',
+          'https://www.techaheadcorp.com/portfolio/best-cargo-logistics-transportation-case-study/',
+        ),
+      ],
+    ),
+    ProjectItem(
+      id: 'journies',
+      name: 'Journies',
+      category: 'Health & fitness',
+      summary:
+          'A fitness app created by former athletes. It builds personalised fitness plans, tracks daily activity, and includes a social feed and chat.',
+      builtAt: 'Techahead',
+      stack: ['Flutter'],
+      visual: ProjectVisual(
+        asset: 'assets/images/projects/journies_cover.webp',
+        aspectRatio: 16 / 10,
+        background: AppColors.plateJournies,
+        fit: BoxFit.contain,
+        inset: 0.04,
+        caption: 'Journies app screen, from Techahead’s case study',
+        semanticLabel: 'Journies app feed post showing a breakfast bowl',
+      ),
+      links: [
+        ProjectLink(
+          'Case study',
+          'https://www.techaheadcorp.com/portfolio/fitness-wellness-app-case-study/',
+        ),
+      ],
+    ),
+    ProjectItem(
+      id: 'argo',
+      name: 'Argo Texas Group',
+      category: 'Insurance · Mobile-first',
+      summary:
+          'A mobile-first insurance app that makes choosing a policy fast, with real-time customer assistance and document management.',
+      builtAt: 'Techahead',
+      stack: ['Flutter'],
+      visual: ProjectVisual(
+        asset: 'assets/images/projects/argo_cover.webp',
+        aspectRatio: 16 / 10,
+        background: AppColors.plateArgo,
+        caption: 'Argo app screens, from Techahead’s case study',
+        semanticLabel:
+            'Argo insurance app screens showing insurance categories, a policy form and a video call with an agent',
+      ),
+      links: [
+        ProjectLink(
+          'Case study',
+          'https://www.techaheadcorp.com/portfolio/roi-focussed-insurance-app/',
+        ),
+      ],
     ),
   ];
 
@@ -413,7 +496,7 @@ abstract final class ResumeData {
     ExpertiseArea(
       title: 'Portal migration to Flutter Web',
       description:
-          'Moved two production B2B portals to Flutter and tuned them for performance, including a UX rework of the Travel Union portal.',
+          'Moved the Adhikari and Travel Union B2B portals to Flutter and tuned them for performance, including a UX rework of the Travel Union portal.',
       evidence: ['Spice Money', 'Travel Union'],
     ),
     ExpertiseArea(
@@ -426,24 +509,25 @@ abstract final class ResumeData {
 
   static const toolbox = <ToolGroup>[
     ToolGroup('Languages', ['Dart', 'Kotlin', 'Swift']),
-    ToolGroup(
-      'State management',
-      ['Riverpod', 'Bloc', 'Provider', 'GetX', 'MobX', 'Redux'],
-    ),
+    ToolGroup('State management', [
+      'Riverpod',
+      'Bloc',
+      'Provider',
+      'GetX',
+      'MobX',
+      'Redux',
+    ]),
     ToolGroup('Data', ['Firebase', 'SQL', 'Hive']),
-    ToolGroup(
-      'Payments',
-      [
-        'In-app purchases',
-        'Stripe',
-        'Razorpay',
-        'PayU',
-        'Paytm',
-        'PhonePe',
-        'Cashfree',
-        'PayPal',
-      ],
-    ),
+    ToolGroup('Payments', [
+      'In-app purchases',
+      'Stripe',
+      'Razorpay',
+      'PayU',
+      'Paytm',
+      'PhonePe',
+      'Cashfree',
+      'PayPal',
+    ]),
     ToolGroup('Practice', ['CI/CD', 'Git', 'Jira', 'Agile', 'OKRs']),
     ToolGroup('AI-assisted development', ['Cursor', 'Claude', 'Codex']),
   ];

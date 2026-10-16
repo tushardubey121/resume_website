@@ -7,7 +7,11 @@ class FadeInView extends StatefulWidget {
   final Widget child;
   final Duration delay;
 
-  const FadeInView({super.key, required this.child, this.delay = Duration.zero});
+  const FadeInView({
+    super.key,
+    required this.child,
+    this.delay = Duration.zero,
+  });
 
   @override
   State<FadeInView> createState() => _FadeInViewState();
@@ -19,8 +23,10 @@ class _FadeInViewState extends State<FadeInView>
     vsync: this,
     duration: const Duration(milliseconds: 520),
   );
-  late final Animation<double> _curve =
-      CurvedAnimation(parent: _controller, curve: Motion.curve);
+  late final Animation<double> _curve = CurvedAnimation(
+    parent: _controller,
+    curve: Motion.curve,
+  );
   bool _scheduled = false;
 
   @override

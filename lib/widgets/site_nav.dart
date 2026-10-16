@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:resume_website/data/resume_data.dart';
 import 'package:resume_website/services/resume_service.dart';
@@ -78,7 +80,10 @@ class SiteNav extends StatelessWidget {
                 spacing: Space.xl,
                 runSpacing: Space.sm,
                 children: [
-                  TextLink(label: 'LinkedIn', uri: Uri.parse(profile.linkedInUrl)),
+                  TextLink(
+                    label: 'LinkedIn',
+                    uri: Uri.parse(profile.linkedInUrl),
+                  ),
                   TextLink(label: 'GitHub', uri: Uri.parse(profile.githubUrl)),
                   if (ResumeService.instance.url.value != null)
                     TextLink(
@@ -113,7 +118,9 @@ class SiteNav extends StatelessWidget {
               : AppColors.paper.withValues(alpha: 0),
           border: Border(
             bottom: BorderSide(
-              color: elevated ? AppColors.line : AppColors.line.withValues(alpha: 0),
+              color: elevated
+                  ? AppColors.line
+                  : AppColors.line.withValues(alpha: 0),
             ),
           ),
         ),
@@ -128,39 +135,41 @@ class SiteNav extends StatelessWidget {
                   padding: context.pagePadding,
                   child: Row(
                     children: [
-                      Flexible(
-                        child: Interactive(
-                          onTap: () => onNavigate('top'),
-                          focusRadius: BorderRadius.circular(4),
-                          builder: (context, hovered, focused) => Semantics(
-                            label: 'Tushar Dubey, back to top',
-                            excludeSemantics: true,
-                            child: Text.rich(
-                              TextSpan(
-                                children: [
-                                  TextSpan(
-                                    text: 'Tushar Dubey',
-                                    style: context.h4.copyWith(
-                                      fontFamily: AppFonts.display,
-                                      fontWeight: FontWeight.w600,
-                                      fontSize: phone ? 18 : 19,
-                                      letterSpacing: -0.2,
-                                    ),
-                                  ),
-                                  if (!phone)
+                      Expanded(
+                        child: Align(
+                          alignment: Alignment.centerLeft,
+                          child: Interactive(
+                            onTap: () => onNavigate('top'),
+                            focusRadius: BorderRadius.circular(4),
+                            builder: (context, hovered, focused) => Semantics(
+                              label: 'Tushar Dubey, back to top',
+                              excludeSemantics: true,
+                              child: Text.rich(
+                                TextSpan(
+                                  children: [
                                     TextSpan(
-                                      text: '   Flutter Engineer',
-                                      style: context.monoSmall,
+                                      text: 'Tushar Dubey',
+                                      style: context.h4.copyWith(
+                                        fontFamily: AppFonts.display,
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: phone ? 18 : 19,
+                                        letterSpacing: -0.2,
+                                      ),
                                     ),
-                                ],
+                                    if (!phone)
+                                      TextSpan(
+                                        text: '   Flutter Engineer',
+                                        style: context.monoSmall,
+                                      ),
+                                  ],
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
                               ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
                             ),
                           ),
                         ),
                       ),
-                      const Spacer(),
                       if (!compact) ...[
                         for (final item in items)
                           Padding(
@@ -190,27 +199,7 @@ class SiteNav extends StatelessWidget {
                                 ),
                         ),
                       ] else
-                        Interactive(
-                          onTap: () => _openMenu(context),
-                          tooltip: 'Menu',
-                          builder: (context, hovered, focused) => Semantics(
-                            label: 'Open navigation menu',
-                            child: Container(
-                              width: 44,
-                              height: 44,
-                              alignment: Alignment.center,
-                              decoration: BoxDecoration(
-                                color: hovered ? AppColors.sunken : Colors.transparent,
-                                borderRadius: BorderRadius.circular(6),
-                              ),
-                              child: const Icon(
-                                Icons.menu_rounded,
-                                size: 24,
-                                color: AppColors.ink,
-                              ),
-                            ),
-                          ),
-                        ),
+                        _MenuButton(onOpen: () => _openMenu(context)),
                     ],
                   ),
                 ),
@@ -223,12 +212,164 @@ class SiteNav extends StatelessWidget {
   }
 }
 
+/// Two-line menu glyph that morphs into a close mark while the menu sheet is
+/// open. The short lower line extends on hover or focus.
+class _MenuButton extends StatefulWidget {
+  final Future<void> Function() onOpen;
+
+  const _MenuButton({required this.onOpen});
+
+  @override
+  State<_MenuButton> createState() => _MenuButtonState();
+}
+
+class _MenuButtonState extends State<_MenuButton>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller = AnimationController(
+    vsync: this,
+    duration: Motion.medium,
+  );
+  bool _open = false;
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  Future<void> _toggle() async {
+    if (_open) return;
+    final reduce = context.reduceMotion;
+    setState(() => _open = true);
+    reduce ? _controller.value = 1 : _controller.forward();
+    await widget.onOpen();
+    if (!mounted) return;
+    setState(() => _open = false);
+    reduce ? _controller.value = 0 : _controller.reverse();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final fast = context.reduceMotion ? Duration.zero : Motion.fast;
+
+    return Interactive(
+      onTap: _toggle,
+      focusRadius: BorderRadius.circular(24),
+      builder: (context, hovered, focused) {
+        final active = hovered || focused || _open;
+        return Semantics(
+          label: _open ? 'Close navigation menu' : 'Open navigation menu',
+          expanded: _open,
+          excludeSemantics: true,
+          child: AnimatedContainer(
+            duration: fast,
+            curve: Motion.curve,
+            height: 40,
+            padding: const EdgeInsets.only(left: 14, right: 12),
+            decoration: BoxDecoration(
+              color: active ? AppColors.surface : Colors.transparent,
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(
+                color: active ? AppColors.lineStrong : AppColors.line,
+              ),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                AnimatedSize(
+                  duration: fast,
+                  curve: Motion.curve,
+                  child: AnimatedSwitcher(
+                    duration: fast,
+                    child: Text(
+                      _open ? 'CLOSE' : 'MENU',
+                      key: ValueKey(_open),
+                      style: context.monoSmall.copyWith(
+                        color: AppColors.ink,
+                        letterSpacing: 1.2,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                TweenAnimationBuilder<double>(
+                  tween: Tween(end: hovered || focused ? 1 : 0),
+                  duration: fast,
+                  curve: Motion.curve,
+                  builder: (context, extend, _) => AnimatedBuilder(
+                    animation: _controller,
+                    builder: (context, _) => _Glyph(
+                      progress: Motion.curve.transform(_controller.value),
+                      extend: extend,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _Glyph extends StatelessWidget {
+  static const double _size = 18;
+  static const double _gap = 6;
+  static const double _stroke = 1.75;
+
+  /// 0 = menu lines, 1 = close mark.
+  final double progress;
+
+  /// 0 = short lower line, 1 = full width.
+  final double extend;
+
+  const _Glyph({required this.progress, required this.extend});
+
+  Widget _line(double width, double dy, double angle) => Transform.translate(
+    offset: Offset(0, dy),
+    child: Transform.rotate(
+      angle: angle,
+      child: Align(
+        alignment: Alignment.centerLeft,
+        child: Container(
+          width: width,
+          height: _stroke,
+          decoration: BoxDecoration(
+            color: AppColors.ink,
+            borderRadius: BorderRadius.circular(1),
+          ),
+        ),
+      ),
+    ),
+  );
+
+  @override
+  Widget build(BuildContext context) {
+    final dy = _gap / 2 * (1 - progress);
+    final angle = math.pi / 4 * progress;
+    final lower = 0.6 + 0.4 * math.max(extend, progress);
+
+    return SizedBox(
+      width: _size,
+      height: _size,
+      child: Stack(
+        children: [_line(_size, -dy, angle), _line(_size * lower, dy, -angle)],
+      ),
+    );
+  }
+}
+
 class _NavLink extends StatelessWidget {
   final String label;
   final bool active;
   final VoidCallback onTap;
 
-  const _NavLink({required this.label, required this.active, required this.onTap});
+  const _NavLink({
+    required this.label,
+    required this.active,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {

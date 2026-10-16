@@ -80,20 +80,20 @@ class AppButton extends StatelessWidget {
   Widget _build(BuildContext context, bool hovered, bool focused) {
     final (Color bg, Color fg, Color border) = switch (variant) {
       ButtonVariant.primary => (
-          hovered ? AppColors.accentStrong : AppColors.accent,
-          AppColors.surface,
-          Colors.transparent,
-        ),
+        hovered ? AppColors.accentStrong : AppColors.accent,
+        AppColors.surface,
+        Colors.transparent,
+      ),
       ButtonVariant.secondary => (
-          hovered ? AppColors.sunken : Colors.transparent,
-          AppColors.ink,
-          hovered ? AppColors.ink : AppColors.lineStrong,
-        ),
+        hovered ? AppColors.sunken : Colors.transparent,
+        AppColors.ink,
+        hovered ? AppColors.ink : AppColors.lineStrong,
+      ),
       ButtonVariant.onDark => (
-          hovered ? AppColors.nightRaised : Colors.transparent,
-          AppColors.nightText,
-          hovered ? AppColors.nightMuted : AppColors.nightLine,
-        ),
+        hovered ? AppColors.nightRaised : Colors.transparent,
+        AppColors.nightText,
+        hovered ? AppColors.nightMuted : AppColors.nightLine,
+      ),
     };
 
     return AnimatedContainer(
@@ -130,8 +130,9 @@ class AppButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final focusColor =
-        variant == ButtonVariant.onDark ? AppColors.nightAccent : AppColors.focusRing;
+    final focusColor = variant == ButtonVariant.onDark
+        ? AppColors.nightAccent
+        : AppColors.focusRing;
     const radius = BorderRadius.all(Radius.circular(9));
     if (uri != null) {
       return ExternalLink(
@@ -191,8 +192,9 @@ class TextLink extends StatelessWidget {
                   style: base.copyWith(
                     color: c,
                     decoration: TextDecoration.underline,
-                    decorationColor:
-                        hovered ? hoverColor : c.withValues(alpha: 0.35),
+                    decorationColor: hovered
+                        ? hoverColor
+                        : c.withValues(alpha: 0.35),
                     decorationThickness: 1.4,
                   ),
                 ),
@@ -220,7 +222,9 @@ class Tag extends StatelessWidget {
       decoration: BoxDecoration(
         color: onDark ? AppColors.nightRaised : AppColors.surface,
         borderRadius: BorderRadius.circular(4),
-        border: Border.all(color: onDark ? AppColors.nightLine : AppColors.line),
+        border: Border.all(
+          color: onDark ? AppColors.nightLine : AppColors.line,
+        ),
       ),
       child: Text(
         label,
@@ -268,7 +272,11 @@ class BulletList extends StatelessWidget {
               children: [
                 Padding(
                   padding: EdgeInsets.only(top: lineHeight / 2 - 0.75),
-                  child: Container(width: 10, height: 1.5, color: AppColors.accent),
+                  child: Container(
+                    width: 10,
+                    height: 1.5,
+                    color: AppColors.accent,
+                  ),
                 ),
                 const SizedBox(width: Space.md),
                 Expanded(child: Text(items[i], style: textStyle)),
@@ -286,14 +294,22 @@ class Fact extends StatelessWidget {
   final String value;
   final String? detail;
 
-  const Fact({super.key, required this.label, required this.value, this.detail});
+  const Fact({
+    super.key,
+    required this.label,
+    required this.value,
+    this.detail,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label.toUpperCase(), style: context.eyebrow.copyWith(color: AppColors.inkSubtle)),
+        Text(
+          label.toUpperCase(),
+          style: context.eyebrow.copyWith(color: AppColors.inkSubtle),
+        ),
         const SizedBox(height: Space.sm),
         Text(value, style: context.h4),
         if (detail != null) ...[
