@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:resume_website/theme/app_theme.dart';
 
 class FadeInView extends StatefulWidget {
   final Widget child;
@@ -24,7 +25,9 @@ class _FadeInViewState extends State<FadeInView>
   late final Animation<double> _opacity;
   late final Animation<Offset> _slide;
   bool _started = false;
+  bool _skipAnimation = false;
   ScrollPosition? _position;
+  int _attachAttempts = 0;
 
   @override
   void initState() {
@@ -34,18 +37,31 @@ class _FadeInViewState extends State<FadeInView>
     _slide = Tween<Offset>(begin: widget.offset, end: Offset.zero).animate(
       CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic),
     );
-    WidgetsBinding.instance.addPostFrameCallback((_) => _attachAndCheck());
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      // Phone / narrow web: show content immediately so nothing stays blank
+      // if scroll/visibility detection fails (common on mobile browsers).
+      if (context.isPhone) {
+        setState(() => _skipAnimation = true);
+        return;
+      }
+      _attachAndCheck();
+    });
   }
 
   @override
   void dispose() {
-    _position?.removeListener(_checkVisibility);
+    _position?.removeListener(_onScroll);
     _controller.dispose();
     super.dispose();
   }
 
-  void _startAnimation() {
-    if (!mounted) return;
+  void _onScroll() => _checkVisibility();
+
+  void _reveal() {
+    if (!mounted || _started) return;
+    _started = true;
+    _position?.removeListener(_onScroll);
     if (widget.delay == Duration.zero) {
       _controller.forward();
       return;
@@ -56,18 +72,25 @@ class _FadeInViewState extends State<FadeInView>
   }
 
   void _attachAndCheck() {
-    if (!mounted) return;
+    if (!mounted || _started || _skipAnimation) return;
+
     final position = Scrollable.maybeOf(context)?.position;
     if (position != null && position != _position) {
-      _position?.removeListener(_checkVisibility);
+      _position?.removeListener(_onScroll);
       _position = position;
-      _position!.addListener(_checkVisibility);
+      _position!.addListener(_onScroll);
     }
+
     _checkVisibility();
+
+    if (!_started && _attachAttempts < 16) {
+      _attachAttempts++;
+      WidgetsBinding.instance.addPostFrameCallback((_) => _attachAndCheck());
+    }
   }
 
   void _checkVisibility() {
-    if (!mounted || _started) return;
+    if (!mounted || _started || _skipAnimation) return;
     final box = context.findRenderObject() as RenderBox?;
     if (box == null || !box.hasSize) return;
 
@@ -75,17 +98,15 @@ class _FadeInViewState extends State<FadeInView>
     final size = box.size;
     final viewHeight = MediaQuery.sizeOf(context).height;
     final visible =
-        offset.dy < viewHeight * 0.92 && (offset.dy + size.height) > 40;
+        offset.dy < viewHeight * 0.98 && (offset.dy + size.height) > -80;
 
-    if (visible) {
-      _started = true;
-      _position?.removeListener(_checkVisibility);
-      _startAnimation();
-    }
+    if (visible) _reveal();
   }
 
   @override
   Widget build(BuildContext context) {
+    if (_skipAnimation) return widget.child;
+
     return AnimatedBuilder(
       animation: _controller,
       builder: (context, child) {
