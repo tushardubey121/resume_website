@@ -26,7 +26,7 @@ class ProjectsSection extends StatelessWidget {
                     eyebrow: 'Selected work',
                     title: 'Apps that made it to the store.',
                     subtitle:
-                        'Loyalty, video, IoT, travel, and food — shipped with Flutter.',
+                        'BFSI, loyalty, video, IoT, travel, and food — shipped with Flutter.',
                   ),
                 ),
                 const SizedBox(height: 40),
@@ -66,8 +66,7 @@ class _ProjectBlock extends StatefulWidget {
 class _ProjectBlockState extends State<_ProjectBlock> {
   bool _hover = false;
 
-  Future<void> _openStore() async {
-    final url = widget.project.playStoreUrl;
+  Future<void> _openUrl(String? url) async {
     if (url == null) return;
     final uri = Uri.parse(url);
     await launchUrl(uri, mode: LaunchMode.externalApplication);
@@ -159,18 +158,37 @@ class _ProjectBlockState extends State<_ProjectBlock> {
               ),
           ],
         ),
-        if (project.playStoreUrl != null) ...[
+        if (project.playStoreUrl != null || project.websiteUrl != null) ...[
           const SizedBox(height: 22),
-          GestureDetector(
-            onTap: _openStore,
-            child: Text(
-              'View on Google Play →',
-              style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                    color: AppColors.ink,
-                    decoration: TextDecoration.underline,
-                    decorationColor: AppColors.accent,
+          Wrap(
+            spacing: 20,
+            runSpacing: 10,
+            children: [
+              if (project.playStoreUrl != null)
+                GestureDetector(
+                  onTap: () => _openUrl(project.playStoreUrl),
+                  child: Text(
+                    'View on Google Play →',
+                    style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                          color: AppColors.ink,
+                          decoration: TextDecoration.underline,
+                          decorationColor: AppColors.accent,
+                        ),
                   ),
-            ),
+                ),
+              if (project.websiteUrl != null)
+                GestureDetector(
+                  onTap: () => _openUrl(project.websiteUrl),
+                  child: Text(
+                    'Visit website →',
+                    style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                          color: AppColors.ink,
+                          decoration: TextDecoration.underline,
+                          decorationColor: AppColors.accent,
+                        ),
+                  ),
+                ),
+            ],
           ),
         ],
       ],

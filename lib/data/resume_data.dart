@@ -39,6 +39,7 @@ class ProjectItem {
   final String description;
   final String imageAsset;
   final String? playStoreUrl;
+  final String? websiteUrl;
   final List<String> tags;
 
   const ProjectItem({
@@ -46,6 +47,7 @@ class ProjectItem {
     required this.description,
     required this.imageAsset,
     this.playStoreUrl,
+    this.websiteUrl,
     required this.tags,
   });
 }
@@ -79,7 +81,7 @@ abstract final class ResumeData {
     linkedInUrl: 'https://www.linkedin.com/in/tushar-dubey715371125/',
     linkedInLabel: 'linkedin.com/in/tushar-dubey715371125',
     summary:
-        'Flutter and Dart developer with 8+ years of experience building Android and iOS apps and websites, with Swift and Kotlin for native work. Currently an Associate Manager at Spice Money, migrating existing portals to Flutter and optimizing their performance. Has shipped apps to Google Play across video calling with in-app subscriptions, loyalty and rewards, BLE IoT and B2B travel booking, and delivered BFSI apps covering AePS, BBPS and insurance lead generation. Works with Firebase and SQL, applies SOLID and Clean Code principles, and has experience of CI/CD and Agile.',
+        'Flutter and Dart developer with 8+ years of experience building Android and iOS apps and websites, with Swift and Kotlin for native work. Currently an Associate Manager at Spice Money, building the Adhikari app and web portal across AePS, BBPS, KYC/eKYC and insurance, and migrating portals to Flutter. Has shipped apps to Google Play across video calling with in-app subscriptions, loyalty and rewards, BLE IoT and B2B travel booking. Works with Firebase and SQL, applies SOLID and Clean Code principles, and has experience of CI/CD and Agile.',
   );
 
   static const experience = <ExperienceItem>[
@@ -88,8 +90,12 @@ abstract final class ResumeData {
       company: 'Spice Money',
       period: 'Aug 2022 — Present',
       highlights: [
-        'Reworked the Travel Union portal to improve the user experience and migrated it to Flutter.',
-        'Migrated the Spice Money Adhikari portal to Flutter and optimized it for better performance.',
+        'Built and shipped features for the Spice Money Adhikari app and website (spicemoney.com), serving banking agents across rural and semi-urban India.',
+        'Worked on AePS (Aadhaar Enabled Payment System) flows for cash withdrawal, cash deposit, balance inquiry and mini statement with biometric authentication.',
+        'Implemented Bharat Connect / BBPS assisted bill payments for utilities, loans, credit cards and insurance premiums on app and B2B portal.',
+        'Delivered KYC and Aadhaar-based eKYC journeys for Adhikari onboarding and Spice Pay wallet activation.',
+        'Built insurance product flows covering two-wheeler, car, health and shopkeeper insurance through the Adhikari platforms.',
+        'Migrated the Spice Money Adhikari and Travel Union portals to Flutter and optimized them for better performance.',
       ],
     ),
     ExperienceItem(
@@ -114,22 +120,14 @@ abstract final class ResumeData {
 
   static const projects = <ProjectItem>[
     ProjectItem(
-      name: 'Zips Cannabis',
+      name: 'Spice Money',
       description:
-          'Loyalty app where users earn points on purchases at Zips stores and redeem them later. Built with Flutter and Firebase.',
-      imageAsset: 'assets/images/projects/zips_cover.jpg',
+          'Adhikari banking-agent app and website for assisted banking across Bharat. Built Flutter features for AePS cash withdrawal/deposit, Bharat Connect (BBPS) bill payments, KYC/eKYC onboarding, and insurance (two-wheeler, car, health).',
+      imageAsset: 'assets/images/projects/spice_money_cover.webp',
       playStoreUrl:
-          'https://play.google.com/store/apps/details?id=com.app.zipsloyalty',
-      tags: ['Flutter', 'Firebase', 'Loyalty'],
-    ),
-    ProjectItem(
-      name: 'TheSkinDeep',
-      description:
-          'Video calling app with a card game. Users play cards from their chosen deck during a video call or locally, and buy play counts through in-app subscriptions.',
-      imageAsset: 'assets/images/projects/skindeep_cover.png',
-      playStoreUrl:
-          'https://play.google.com/store/apps/details?id=com.skindeep',
-      tags: ['Flutter', 'Video', 'IAP'],
+          'https://play.google.com/store/apps/details?id=in.spicemudra&hl=en_IN',
+      websiteUrl: 'https://www.spicemoney.com/',
+      tags: ['Flutter', 'BFSI', 'AePS', 'BBPS', 'eKYC'],
     ),
     ProjectItem(
       name: 'Teplo Tea',
@@ -148,6 +146,24 @@ abstract final class ResumeData {
       playStoreUrl:
           'https://play.google.com/store/apps/details?id=com.travelunion.app',
       tags: ['Flutter', 'B2B', 'Travel'],
+    ),
+    ProjectItem(
+      name: 'TheSkinDeep',
+      description:
+          'Video calling app with a card game. Users play cards from their chosen deck during a video call or locally, and buy play counts through in-app subscriptions.',
+      imageAsset: 'assets/images/projects/skindeep_cover.png',
+      playStoreUrl:
+          'https://play.google.com/store/apps/details?id=com.skindeep',
+      tags: ['Flutter', 'Video', 'IAP'],
+    ),
+    ProjectItem(
+      name: 'Zips Cannabis',
+      description:
+          'Loyalty app where users earn points on purchases at Zips stores and redeem them later. Built with Flutter and Firebase.',
+      imageAsset: 'assets/images/projects/zips_cover.jpg',
+      playStoreUrl:
+          'https://play.google.com/store/apps/details?id=com.app.zipsloyalty',
+      tags: ['Flutter', 'Firebase', 'Loyalty'],
     ),
     ProjectItem(
       name: 'Foodaholix',
