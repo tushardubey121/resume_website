@@ -19,12 +19,17 @@ class HeroSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final profile = ResumeData.profile;
+    final phone = context.isPhone;
     final compact = context.isCompact;
     final height = MediaQuery.sizeOf(context).height;
+    final minHeight = phone ? math.min(height, 560.0) : (compact ? 640.0 : 720.0);
+    final heroHeight = phone
+        ? math.max(height * 0.92, 520.0)
+        : math.max(height, minHeight);
 
     return SizedBox(
       width: double.infinity,
-      height: math.max(height, compact ? 640.0 : 720.0),
+      height: heroHeight,
       child: Stack(
         fit: StackFit.expand,
         children: [
@@ -44,30 +49,31 @@ class HeroSection extends StatelessWidget {
             ),
           ),
           const Positioned.fill(child: CustomPaint(painter: _HeroMeshPainter())),
-          Positioned(
-            right: compact ? -80 : -40,
-            top: height * 0.12,
-            child: IgnorePointer(
-              child: Opacity(
-                opacity: compact ? 0.07 : 0.11,
-                child: Text(
-                  'TD',
-                  style: GoogleFonts.fraunces(
-                    fontSize: compact ? 220 : 340,
-                    fontWeight: FontWeight.w600,
-                    height: 1,
-                    color: AppColors.white,
-                    letterSpacing: -12,
+          if (!phone)
+            Positioned(
+              right: compact ? -80 : -40,
+              top: height * 0.12,
+              child: IgnorePointer(
+                child: Opacity(
+                  opacity: compact ? 0.07 : 0.11,
+                  child: Text(
+                    'TD',
+                    style: GoogleFonts.fraunces(
+                      fontSize: compact ? 220 : 340,
+                      fontWeight: FontWeight.w600,
+                      height: 1,
+                      color: AppColors.white,
+                      letterSpacing: -12,
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
           Positioned(
             left: 0,
             right: 0,
             bottom: 0,
-            height: 120,
+            height: phone ? 72 : 120,
             child: DecoratedBox(
               decoration: BoxDecoration(
                 gradient: LinearGradient(
@@ -89,8 +95,8 @@ class HeroSection extends StatelessWidget {
                 constraints: BoxConstraints(maxWidth: context.contentMaxWidth),
                 child: Padding(
                   padding: context.pagePadding.copyWith(
-                    top: compact ? 96 : 120,
-                    bottom: 88,
+                    top: phone ? 72 : (compact ? 96 : 120),
+                    bottom: phone ? 56 : 88,
                   ),
                   child: Align(
                     alignment: Alignment.centerLeft,
@@ -106,64 +112,66 @@ class HeroSection extends StatelessWidget {
                             child: Text(
                               'FLUTTER  ·  MOBILE  ·  LEADERSHIP',
                               style: GoogleFonts.figtree(
-                                fontSize: 12,
+                                fontSize: phone ? 11 : 12,
                                 fontWeight: FontWeight.w600,
-                                letterSpacing: 2.4,
+                                letterSpacing: phone ? 1.8 : 2.4,
                                 color: const Color(0xFF7DD3C7),
                               ),
                             ),
                           ),
-                          SizedBox(height: compact ? 22 : 28),
+                          SizedBox(height: phone ? 16 : (compact ? 22 : 28)),
                           FadeInView(
                             delay: const Duration(milliseconds: 80),
                             child: Text(
                               profile.name,
                               style: GoogleFonts.fraunces(
-                                fontSize: compact ? 48 : 76,
+                                fontSize: phone ? 40 : (compact ? 48 : 76),
                                 fontWeight: FontWeight.w600,
-                                height: 1.02,
-                                letterSpacing: -1.6,
+                                height: 1.05,
+                                letterSpacing: phone ? -1.0 : -1.6,
                                 color: AppColors.white,
                               ),
                             ),
                           ),
-                          SizedBox(height: compact ? 20 : 26),
+                          SizedBox(height: phone ? 16 : (compact ? 20 : 26)),
                           FadeInView(
                             delay: const Duration(milliseconds: 160),
                             child: Container(
-                              width: 56,
+                              width: phone ? 40 : 56,
                               height: 2,
                               color: const Color(0xFF2DD4BF),
                             ),
                           ),
-                          SizedBox(height: compact ? 20 : 26),
+                          SizedBox(height: phone ? 16 : (compact ? 20 : 26)),
                           FadeInView(
                             delay: const Duration(milliseconds: 220),
                             child: Text(
                               'Flutter apps & portals that ship.',
                               style: GoogleFonts.fraunces(
-                                fontSize: compact ? 22 : 28,
+                                fontSize: phone ? 20 : (compact ? 22 : 28),
                                 fontWeight: FontWeight.w500,
-                                height: 1.25,
+                                height: 1.3,
                                 color: AppColors.white.withValues(alpha: 0.92),
                               ),
                             ),
                           ),
-                          const SizedBox(height: 16),
+                          SizedBox(height: phone ? 12 : 16),
                           FadeInView(
                             delay: const Duration(milliseconds: 280),
                             child: Text(
-                              '${profile.title} in ${profile.location}. '
-                              'Eight years building Android, iOS, and web products.',
+                              phone
+                                  ? '${profile.title} in ${profile.location}.'
+                                  : '${profile.title} in ${profile.location}. '
+                                      'Eight years building Android, iOS, and web products.',
                               style: GoogleFonts.figtree(
-                                fontSize: compact ? 16 : 18,
-                                height: 1.6,
+                                fontSize: phone ? 15 : (compact ? 16 : 18),
+                                height: 1.55,
                                 fontWeight: FontWeight.w400,
                                 color: AppColors.white.withValues(alpha: 0.68),
                               ),
                             ),
                           ),
-                          SizedBox(height: compact ? 36 : 44),
+                          SizedBox(height: phone ? 28 : (compact ? 36 : 44)),
                           FadeInView(
                             delay: const Duration(milliseconds: 360),
                             child: Wrap(
@@ -174,11 +182,13 @@ class HeroSection extends StatelessWidget {
                                 _HeroButton(
                                   label: 'View projects',
                                   filled: true,
+                                  compact: phone,
                                   onTap: onViewWork,
                                 ),
                                 _HeroButton(
                                   label: 'Get in touch',
                                   filled: false,
+                                  compact: phone,
                                   onTap: onContact,
                                 ),
                               ],
@@ -201,12 +211,14 @@ class HeroSection extends StatelessWidget {
 class _HeroButton extends StatefulWidget {
   final String label;
   final bool filled;
+  final bool compact;
   final VoidCallback onTap;
 
   const _HeroButton({
     required this.label,
     required this.filled,
     required this.onTap,
+    this.compact = false,
   });
 
   @override
@@ -226,11 +238,14 @@ class _HeroButtonState extends State<_HeroButton> {
         child: GestureDetector(
           onTap: widget.onTap,
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 14),
+            padding: EdgeInsets.symmetric(
+              horizontal: widget.compact ? 4 : 10,
+              vertical: widget.compact ? 12 : 14,
+            ),
             child: AnimatedDefaultTextStyle(
               duration: const Duration(milliseconds: 180),
               style: GoogleFonts.figtree(
-                fontSize: 15,
+                fontSize: widget.compact ? 14 : 15,
                 fontWeight: FontWeight.w600,
                 letterSpacing: 0.2,
                 color: _hover
@@ -247,7 +262,7 @@ class _HeroButtonState extends State<_HeroButton> {
                   ),
                   Icon(
                     Icons.arrow_forward,
-                    size: 16,
+                    size: widget.compact ? 15 : 16,
                     color: _hover
                         ? AppColors.white
                         : AppColors.white.withValues(alpha: 0.78),
@@ -268,7 +283,10 @@ class _HeroButtonState extends State<_HeroButton> {
         onTap: widget.onTap,
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 200),
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 15),
+          padding: EdgeInsets.symmetric(
+            horizontal: widget.compact ? 20 : 24,
+            vertical: widget.compact ? 13 : 15,
+          ),
           decoration: BoxDecoration(
             color: _hover ? const Color(0xFFF0FDFA) : AppColors.white,
             borderRadius: BorderRadius.circular(2),
@@ -276,7 +294,7 @@ class _HeroButtonState extends State<_HeroButton> {
           child: Text(
             widget.label,
             style: GoogleFonts.figtree(
-              fontSize: 15,
+              fontSize: widget.compact ? 14 : 15,
               fontWeight: FontWeight.w600,
               letterSpacing: 0.2,
               color: const Color(0xFF0A2A2E),

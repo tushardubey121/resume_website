@@ -70,12 +70,15 @@ abstract final class AppTheme {
 }
 
 abstract final class Breakpoints {
+  static const phone = 600.0;
   static const tablet = 920.0;
   static const desktop = 1100.0;
 }
 
 extension ResponsiveContext on BuildContext {
   double get pageWidth => MediaQuery.sizeOf(this).width;
+
+  bool get isPhone => pageWidth < Breakpoints.phone;
 
   bool get isCompact => pageWidth < Breakpoints.tablet;
 
@@ -84,6 +87,15 @@ extension ResponsiveContext on BuildContext {
   double get contentMaxWidth => isDesktop ? 1120 : 920;
 
   EdgeInsets get pagePadding => EdgeInsets.symmetric(
-        horizontal: isCompact ? 20 : (isDesktop ? 48 : 32),
+        horizontal: isPhone ? 20 : (isCompact ? 28 : (isDesktop ? 48 : 32)),
       );
+
+  EdgeInsets get sectionPadding => pagePadding.copyWith(
+        top: isPhone ? 56 : 88,
+        bottom: isPhone ? 56 : 88,
+      );
+
+  double get sectionGap => isPhone ? 28 : 40;
+
+  double get blockGap => isPhone ? 32 : 48;
 }

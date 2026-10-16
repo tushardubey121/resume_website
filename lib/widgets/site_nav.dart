@@ -21,8 +21,72 @@ class SiteNav extends StatelessWidget {
     required this.items,
   });
 
+  Future<void> _openMenu(BuildContext context) async {
+    final selected = await showModalBottomSheet<String>(
+      context: context,
+      backgroundColor: AppColors.foam,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(12)),
+      ),
+      builder: (context) {
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(8, 8, 8, 16),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Center(
+                  child: Container(
+                    width: 36,
+                    height: 4,
+                    margin: const EdgeInsets.only(bottom: 12, top: 4),
+                    decoration: BoxDecoration(
+                      color: AppColors.line,
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+                  child: Text(
+                    'Navigate',
+                    style: GoogleFonts.fraunces(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.ink,
+                    ),
+                  ),
+                ),
+                for (final item in items)
+                  ListTile(
+                    title: Text(
+                      item.label,
+                      style: GoogleFonts.figtree(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                        color: AppColors.ink,
+                      ),
+                    ),
+                    trailing: const Icon(
+                      Icons.arrow_forward_ios_rounded,
+                      size: 14,
+                      color: AppColors.inkSoft,
+                    ),
+                    onTap: () => Navigator.pop(context, item.id),
+                  ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+    if (selected != null) onNavigate(selected);
+  }
+
   @override
   Widget build(BuildContext context) {
+    final phone = context.isPhone;
     final compact = context.isCompact;
     final onDark = !elevated;
     final brandColor = onDark ? AppColors.white : AppColors.ink;
@@ -62,7 +126,7 @@ class SiteNav extends StatelessWidget {
             child: Padding(
               padding: EdgeInsets.symmetric(
                 horizontal: context.pagePadding.horizontal / 2,
-                vertical: 16,
+                vertical: phone ? 12 : 16,
               ),
               child: Row(
                 children: [
@@ -72,13 +136,13 @@ class SiteNav extends StatelessWidget {
                       child: AnimatedDefaultTextStyle(
                         duration: const Duration(milliseconds: 220),
                         style: GoogleFonts.fraunces(
-                          fontSize: 20,
+                          fontSize: phone ? 18 : 20,
                           fontWeight: FontWeight.w600,
                           letterSpacing: -0.4,
                           color: brandColor,
                         ),
-                        child: const Text(
-                          'Tushar Dubey',
+                        child: Text(
+                          phone ? 'Tushar' : 'Tushar Dubey',
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
@@ -100,20 +164,11 @@ class SiteNav extends StatelessWidget {
                       ],
                     )
                   else
-                    PopupMenuButton<String>(
+                    IconButton(
                       tooltip: 'Menu',
-                      onSelected: onNavigate,
-                      itemBuilder: (context) => [
-                        for (final item in items)
-                          PopupMenuItem(
-                            value: item.id,
-                            child: Text(item.label),
-                          ),
-                      ],
-                      child: Padding(
-                        padding: const EdgeInsets.all(8),
-                        child: Icon(Icons.menu_rounded, color: menuIconColor),
-                      ),
+                      onPressed: () => _openMenu(context),
+                      icon: Icon(Icons.menu_rounded, color: menuIconColor),
+                      visualDensity: VisualDensity.compact,
                     ),
                 ],
               ),

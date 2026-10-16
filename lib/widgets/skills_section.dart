@@ -9,6 +9,8 @@ class SkillsSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final phone = context.isPhone;
+
     return Container(
       width: double.infinity,
       color: AppColors.mist,
@@ -16,7 +18,7 @@ class SkillsSection extends StatelessWidget {
         child: ConstrainedBox(
           constraints: BoxConstraints(maxWidth: context.contentMaxWidth),
           child: Padding(
-            padding: context.pagePadding.copyWith(top: 88, bottom: 88),
+            padding: context.sectionPadding,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -26,15 +28,17 @@ class SkillsSection extends StatelessWidget {
                     title: 'What I work with every day.',
                   ),
                 ),
-                const SizedBox(height: 36),
+                SizedBox(height: phone ? 28 : 36),
                 LayoutBuilder(
                   builder: (context, constraints) {
-                    final columns = constraints.maxWidth > 800
-                        ? 2
-                        : (constraints.maxWidth > 520 ? 2 : 1);
+                    final columns = phone
+                        ? 1
+                        : (constraints.maxWidth > 800
+                            ? 2
+                            : (constraints.maxWidth > 520 ? 2 : 1));
                     return Wrap(
-                      spacing: 28,
-                      runSpacing: 28,
+                      spacing: phone ? 0 : 28,
+                      runSpacing: phone ? 24 : 28,
                       children: [
                         for (var i = 0; i < ResumeData.skills.length; i++)
                           FadeInView(
@@ -68,17 +72,53 @@ class _SkillGroupBlock extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final phone = context.isPhone;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(group.label, style: Theme.of(context).textTheme.titleLarge),
-        const SizedBox(height: 14),
         Text(
-          group.skills.join('  ·  '),
-          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                height: 1.7,
+          group.label,
+          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                fontSize: phone ? 17 : null,
               ),
         ),
+        SizedBox(height: phone ? 12 : 14),
+        if (phone)
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              for (final skill in group.skills)
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: AppColors.foam,
+                    borderRadius: BorderRadius.circular(2),
+                    border: Border.all(
+                      color: AppColors.line.withValues(alpha: 0.8),
+                    ),
+                  ),
+                  child: Text(
+                    skill,
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          fontSize: 13.5,
+                          color: AppColors.ink,
+                          fontWeight: FontWeight.w500,
+                          height: 1.2,
+                        ),
+                  ),
+                ),
+            ],
+          )
+        else
+          Text(
+            group.skills.join('  ·  '),
+            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                  height: 1.7,
+                ),
+          ),
       ],
     );
   }

@@ -15,6 +15,8 @@ class SectionHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final phone = context.isPhone;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -22,24 +24,32 @@ class SectionHeader extends StatelessWidget {
           eyebrow.toUpperCase(),
           style: Theme.of(context).textTheme.labelLarge?.copyWith(
                 color: AppColors.accent,
-                letterSpacing: 1.6,
-                fontSize: 12,
+                letterSpacing: phone ? 1.2 : 1.6,
+                fontSize: phone ? 11 : 12,
               ),
         ),
-        const SizedBox(height: 12),
+        SizedBox(height: phone ? 10 : 12),
         Text(
           title,
-          style: context.isCompact
-              ? Theme.of(context).textTheme.headlineMedium
-              : Theme.of(context).textTheme.headlineLarge,
+          style: phone
+              ? Theme.of(context).textTheme.headlineSmall?.copyWith(
+                    fontSize: 26,
+                    height: 1.15,
+                  )
+              : context.isCompact
+                  ? Theme.of(context).textTheme.headlineMedium
+                  : Theme.of(context).textTheme.headlineLarge,
         ),
         if (subtitle != null) ...[
-          const SizedBox(height: 12),
+          SizedBox(height: phone ? 10 : 12),
           ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 640),
             child: Text(
               subtitle!,
-              style: Theme.of(context).textTheme.bodyLarge,
+              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                    fontSize: phone ? 15 : null,
+                    height: phone ? 1.5 : null,
+                  ),
             ),
           ),
         ],

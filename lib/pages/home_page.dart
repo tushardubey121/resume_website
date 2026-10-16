@@ -62,11 +62,12 @@ class _HomePageState extends State<HomePage> {
     final key = _sectionKeys[id];
     final context = key?.currentContext;
     if (context == null) return;
+    final phone = MediaQuery.sizeOf(this.context).width < Breakpoints.phone;
     await Scrollable.ensureVisible(
       context,
       duration: const Duration(milliseconds: 650),
       curve: Curves.easeInOutCubic,
-      alignment: id == 'hero' ? 0 : 0.08,
+      alignment: id == 'hero' ? 0 : (phone ? 0.04 : 0.08),
     );
   }
 

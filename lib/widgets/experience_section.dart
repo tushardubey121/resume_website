@@ -9,6 +9,8 @@ class ExperienceSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final phone = context.isPhone;
+
     return Container(
       width: double.infinity,
       color: AppColors.mist,
@@ -16,7 +18,7 @@ class ExperienceSection extends StatelessWidget {
         child: ConstrainedBox(
           constraints: BoxConstraints(maxWidth: context.contentMaxWidth),
           child: Padding(
-            padding: context.pagePadding.copyWith(top: 88, bottom: 88),
+            padding: context.sectionPadding,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -28,16 +30,16 @@ class ExperienceSection extends StatelessWidget {
                         'From consulting engagements to leading Flutter migrations at scale.',
                   ),
                 ),
-                const SizedBox(height: 40),
+                SizedBox(height: context.sectionGap),
                 for (var i = 0; i < ResumeData.experience.length; i++) ...[
                   FadeInView(
                     delay: Duration(milliseconds: 80 * i),
                     child: _ExperienceRow(item: ResumeData.experience[i]),
                   ),
                   if (i != ResumeData.experience.length - 1)
-                    const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 28),
-                      child: Divider(color: AppColors.line, height: 1),
+                    Padding(
+                      padding: EdgeInsets.symmetric(vertical: phone ? 22 : 28),
+                      child: const Divider(color: AppColors.line, height: 1),
                     ),
                 ],
               ],
@@ -56,21 +58,33 @@ class _ExperienceRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final phone = context.isPhone;
     final compact = context.isCompact;
 
     final meta = Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(item.role, style: Theme.of(context).textTheme.titleLarge),
-        const SizedBox(height: 6),
+        Text(
+          item.role,
+          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                fontSize: phone ? 18 : null,
+              ),
+        ),
+        SizedBox(height: phone ? 4 : 6),
         Text(
           item.company,
           style: Theme.of(context).textTheme.titleMedium?.copyWith(
                 color: AppColors.accent,
+                fontSize: phone ? 15 : null,
               ),
         ),
-        const SizedBox(height: 6),
-        Text(item.period, style: Theme.of(context).textTheme.bodySmall),
+        SizedBox(height: phone ? 4 : 6),
+        Text(
+          item.period,
+          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                fontSize: phone ? 13 : null,
+              ),
+        ),
       ],
     );
 
@@ -82,26 +96,29 @@ class _ExperienceRow extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Padding(
-                padding: const EdgeInsets.only(top: 9),
+                padding: EdgeInsets.only(top: phone ? 7 : 9),
                 child: Container(
-                  width: 6,
-                  height: 6,
+                  width: phone ? 5 : 6,
+                  height: phone ? 5 : 6,
                   decoration: const BoxDecoration(
                     color: AppColors.accentSoft,
                     shape: BoxShape.circle,
                   ),
                 ),
               ),
-              const SizedBox(width: 12),
+              SizedBox(width: phone ? 10 : 12),
               Expanded(
                 child: Text(
                   point,
-                  style: Theme.of(context).textTheme.bodyMedium,
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        fontSize: phone ? 14.5 : null,
+                        height: phone ? 1.5 : null,
+                      ),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: phone ? 10 : 12),
         ],
       ],
     );
@@ -110,8 +127,20 @@ class _ExperienceRow extends StatelessWidget {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          meta,
-          const SizedBox(height: 18),
+          if (phone)
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.fromLTRB(14, 14, 14, 14),
+              decoration: BoxDecoration(
+                color: AppColors.foam,
+                borderRadius: BorderRadius.circular(4),
+                border: Border.all(color: AppColors.line.withValues(alpha: 0.7)),
+              ),
+              child: meta,
+            )
+          else
+            meta,
+          SizedBox(height: phone ? 16 : 18),
           bullets,
         ],
       );

@@ -184,9 +184,32 @@ abstract final class ResumeData {
         'iOS',
         'Kotlin',
         'Swift',
-        'In-app purchases',
         'BLE',
         'IoT',
+      ],
+    ),
+    SkillGroup(
+      label: 'State management',
+      skills: [
+        'Provider',
+        'Riverpod',
+        'Bloc',
+        'GetX',
+        'MobX',
+        'Redux',
+      ],
+    ),
+    SkillGroup(
+      label: 'Payment gateways',
+      skills: [
+        'In-app purchases',
+        'Stripe',
+        'Razorpay',
+        'PayU',
+        'Paytm',
+        'PhonePe',
+        'Cashfree',
+        'PayPal',
       ],
     ),
     SkillGroup(
@@ -199,7 +222,17 @@ abstract final class ResumeData {
     ),
     SkillGroup(
       label: 'Tools',
-      skills: ['Git', 'Jira', 'Claude', 'Cursor', 'Codex'],
+      skills: [
+        'Git',
+        'Jira',
+        'VS Code',
+        'Android Studio',
+        'Xcode',
+        'IntelliJ',
+        'Claude',
+        'Cursor',
+        'Codex',
+      ],
     ),
   ];
 

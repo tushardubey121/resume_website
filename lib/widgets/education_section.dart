@@ -10,6 +10,7 @@ class EducationSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final edu = ResumeData.education;
+    final phone = context.isPhone;
 
     return Container(
       width: double.infinity,
@@ -18,7 +19,10 @@ class EducationSection extends StatelessWidget {
         child: ConstrainedBox(
           constraints: BoxConstraints(maxWidth: context.contentMaxWidth),
           child: Padding(
-            padding: context.pagePadding.copyWith(top: 72, bottom: 72),
+            padding: context.pagePadding.copyWith(
+              top: phone ? 48 : 72,
+              bottom: phone ? 48 : 72,
+            ),
             child: FadeInView(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -27,12 +31,22 @@ class EducationSection extends StatelessWidget {
                     eyebrow: 'Education',
                     title: 'Foundations.',
                   ),
-                  const SizedBox(height: 24),
-                  Text(edu.degree, style: Theme.of(context).textTheme.titleLarge),
-                  const SizedBox(height: 8),
+                  SizedBox(height: phone ? 18 : 24),
                   Text(
-                    '${edu.school}  ·  ${edu.year}',
-                    style: Theme.of(context).textTheme.bodyLarge,
+                    edu.degree,
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                          fontSize: phone ? 17 : null,
+                        ),
+                  ),
+                  SizedBox(height: phone ? 6 : 8),
+                  Text(
+                    phone
+                        ? '${edu.school}\n${edu.year}'
+                        : '${edu.school}  ·  ${edu.year}',
+                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                          fontSize: phone ? 15 : null,
+                          height: phone ? 1.45 : null,
+                        ),
                   ),
                 ],
               ),

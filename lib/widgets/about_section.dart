@@ -10,6 +10,7 @@ class AboutSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final profile = ResumeData.profile;
+    final phone = context.isPhone;
 
     return Container(
       width: double.infinity,
@@ -18,7 +19,7 @@ class AboutSection extends StatelessWidget {
         child: ConstrainedBox(
           constraints: BoxConstraints(maxWidth: context.contentMaxWidth),
           child: Padding(
-            padding: context.pagePadding.copyWith(top: 88, bottom: 88),
+            padding: context.sectionPadding,
             child: FadeInView(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -27,12 +28,12 @@ class AboutSection extends StatelessWidget {
                     eyebrow: 'About',
                     title: 'Building products that people actually use.',
                   ),
-                  const SizedBox(height: 28),
+                  SizedBox(height: phone ? 20 : 28),
                   Text(
                     profile.summary,
                     style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                          fontSize: context.isCompact ? 17 : 19,
-                          height: 1.65,
+                          fontSize: phone ? 15.5 : (context.isCompact ? 17 : 19),
+                          height: phone ? 1.6 : 1.65,
                         ),
                   ),
                 ],
