@@ -1,138 +1,189 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:resume_website/data/resume_data.dart';
+import 'package:resume_website/services/resume_service.dart';
 import 'package:resume_website/theme/app_theme.dart';
-import 'package:resume_website/widgets/fade_in_view.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:resume_website/widgets/common/interactive.dart';
+import 'package:resume_website/widgets/common/ui_kit.dart';
+import 'package:resume_website/widgets/section_header.dart';
 
 class ContactSection extends StatelessWidget {
   const ContactSection({super.key});
-
-  Future<void> _launch(String url) async {
-    await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
-  }
 
   @override
   Widget build(BuildContext context) {
     final profile = ResumeData.profile;
     final phone = context.isPhone;
 
-    return Container(
-      width: double.infinity,
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            Color(0xFF0B3D3A),
-            Color(0xFF0F766E),
-          ],
-        ),
-      ),
-      child: Center(
-        child: ConstrainedBox(
-          constraints: BoxConstraints(maxWidth: context.contentMaxWidth),
-          child: Padding(
-            padding: context.pagePadding.copyWith(
-              top: phone ? 64 : 96,
-              bottom: phone ? 48 : 72,
+    return PageSection(
+      background: AppColors.night,
+      padding: context.sectionPadding.copyWith(bottom: Space.x2),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SectionHeader(
+            index: '04',
+            label: 'Contact',
+            title: 'Hiring for a senior mobile role? Let’s talk.',
+            intro:
+                'I’m based in Mumbai and open to senior Flutter and mobile '
+                'engineering roles. Email is the fastest way to reach me.',
+            onDark: true,
+          ),
+          SizedBox(height: context.sectionGap),
+          Padding(
+            padding: EdgeInsets.only(
+              left: context.isCompact ? 0 : context.railWidth,
             ),
-            child: FadeInView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    phone ? 'Let’s build something.' : 'Let us build something.',
-                    style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-                          color: AppColors.white,
-                          fontSize: phone ? 28 : null,
-                          height: phone ? 1.15 : null,
-                        ),
-                  ),
-                  SizedBox(height: phone ? 12 : 16),
-                  ConstrainedBox(
-                    constraints: const BoxConstraints(maxWidth: 520),
-                    child: Text(
-                      'Open to conversations about Flutter products, migrations, and mobile leadership roles.',
-                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                            color: AppColors.white.withValues(alpha: 0.85),
-                            fontSize: phone ? 15 : null,
-                            height: phone ? 1.5 : null,
-                          ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _EmailRow(email: profile.email),
+                const SizedBox(height: Space.x2),
+                Wrap(
+                  spacing: Space.md,
+                  runSpacing: Space.md,
+                  children: [
+                    AppButton(
+                      label: 'LinkedIn',
+                      icon: Icons.north_east_rounded,
+                      variant: ButtonVariant.onDark,
+                      uri: Uri.parse(profile.linkedInUrl),
                     ),
-                  ),
-                  SizedBox(height: phone ? 28 : 36),
-                  _ContactLink(
-                    label: profile.email,
-                    phone: phone,
-                    onTap: () => _launch('mailto:${profile.email}'),
-                  ),
-                  SizedBox(height: phone ? 10 : 12),
-                  _ContactLink(
-                    label: profile.phone,
-                    phone: phone,
-                    onTap: () =>
-                        _launch('tel:${profile.phone.replaceAll(' ', '')}'),
-                  ),
-                  SizedBox(height: phone ? 10 : 12),
-                  _ContactLink(
-                    label: 'LinkedIn',
-                    phone: phone,
-                    onTap: () => _launch(profile.linkedInUrl),
-                  ),
-                  SizedBox(height: phone ? 40 : 56),
-                  Text(
-                    '© ${DateTime.now().year} ${profile.name}',
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: AppColors.white.withValues(alpha: 0.55),
-                          fontSize: phone ? 12 : null,
-                        ),
-                  ),
-                ],
-              ),
+                    AppButton(
+                      label: 'GitHub',
+                      icon: Icons.north_east_rounded,
+                      variant: ButtonVariant.onDark,
+                      uri: Uri.parse(profile.githubUrl),
+                    ),
+                    ValueListenableBuilder<Uri?>(
+                      valueListenable: ResumeService.instance.url,
+                      builder: (context, resume, _) => resume == null
+                          ? const SizedBox.shrink()
+                          : AppButton(
+                              label: 'Résumé (PDF)',
+                              icon: Icons.file_download_outlined,
+                              variant: ButtonVariant.onDark,
+                              uri: resume,
+                            ),
+                    ),
+                  ],
+                ),
+              ],
             ),
           ),
-        ),
+          SizedBox(height: phone ? Space.x4 : Space.x5),
+          const Hairline(color: AppColors.nightLine),
+          const SizedBox(height: Space.xl),
+          const _Footer(),
+        ],
       ),
     );
   }
 }
 
-class _ContactLink extends StatefulWidget {
-  final String label;
-  final VoidCallback onTap;
-  final bool phone;
+class _EmailRow extends StatelessWidget {
+  final String email;
 
-  const _ContactLink({
-    required this.label,
-    required this.onTap,
-    this.phone = false,
-  });
+  const _EmailRow({required this.email});
 
-  @override
-  State<_ContactLink> createState() => _ContactLinkState();
-}
-
-class _ContactLinkState extends State<_ContactLink> {
-  bool _hover = false;
+  Future<void> _copy(BuildContext context) async {
+    await Clipboard.setData(ClipboardData(text: email));
+    if (!context.mounted) return;
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(
+        const SnackBar(
+          content: Text('Email address copied'),
+          duration: Duration(seconds: 2),
+          width: 260,
+        ),
+      );
+  }
 
   @override
   Widget build(BuildContext context) {
-    return MouseRegion(
-      onEnter: (_) => setState(() => _hover = true),
-      onExit: (_) => setState(() => _hover = false),
-      child: GestureDetector(
-        onTap: widget.onTap,
-        child: Text(
-          widget.label,
-          style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                color: AppColors.white,
-                fontSize: widget.phone ? 17 : null,
-                decoration: TextDecoration.underline,
-                decorationColor: _hover
-                    ? AppColors.accentSoft
-                    : AppColors.white.withValues(alpha: 0.4),
-              ),
+    final size = context.isPhone ? 22.0 : (context.isCompact ? 30.0 : 38.0);
+    return Wrap(
+      spacing: Space.md,
+      runSpacing: Space.sm,
+      crossAxisAlignment: WrapCrossAlignment.center,
+      children: [
+        ExternalLink(
+          uri: Uri.parse('mailto:$email'),
+          newTab: false,
+          focusColor: AppColors.nightAccent,
+          builder: (context, hovered, focused) => Text(
+            email,
+            style: context.h2.copyWith(
+              fontSize: size,
+              color: hovered ? AppColors.nightAccent : AppColors.nightText,
+              decoration: TextDecoration.underline,
+              decorationColor: hovered
+                  ? AppColors.nightAccent
+                  : AppColors.nightText.withValues(alpha: 0.3),
+              decorationThickness: 1.2,
+            ),
+          ),
         ),
+        Interactive(
+          onTap: () => _copy(context),
+          tooltip: 'Copy email address',
+          focusColor: AppColors.nightAccent,
+          builder: (context, hovered, focused) => Semantics(
+            label: 'Copy email address',
+            child: AnimatedContainer(
+              duration: Motion.fast,
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                color: hovered ? AppColors.nightRaised : Colors.transparent,
+                borderRadius: BorderRadius.circular(6),
+                border: Border.all(color: AppColors.nightLine),
+              ),
+              child: const Icon(
+                Icons.content_copy_rounded,
+                size: 18,
+                color: AppColors.nightMuted,
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _Footer extends StatelessWidget {
+  const _Footer();
+
+  @override
+  Widget build(BuildContext context) {
+    final profile = ResumeData.profile;
+    final style = context.monoSmall.copyWith(color: AppColors.nightMuted);
+    return SizedBox(
+      width: double.infinity,
+      child: Wrap(
+      alignment: WrapAlignment.spaceBetween,
+      spacing: Space.xl,
+      runSpacing: Space.md,
+      crossAxisAlignment: WrapCrossAlignment.center,
+      children: [
+        Text('© ${DateTime.now().year} ${profile.name}', style: style),
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Flexible(child: Text('Designed and built with Flutter Web.  ', style: style)),
+            TextLink(
+              label: 'Source',
+              uri: Uri.parse(profile.sourceUrl),
+              style: style,
+              color: AppColors.nightMuted,
+              hoverColor: AppColors.nightAccent,
+            ),
+          ],
+        ),
+      ],
       ),
     );
   }

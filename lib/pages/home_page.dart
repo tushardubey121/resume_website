@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:resume_website/theme/app_theme.dart';
-import 'package:resume_website/widgets/about_section.dart';
 import 'package:resume_website/widgets/contact_section.dart';
-import 'package:resume_website/widgets/education_section.dart';
 import 'package:resume_website/widgets/experience_section.dart';
+import 'package:resume_website/widgets/expertise_section.dart';
 import 'package:resume_website/widgets/hero_section.dart';
 import 'package:resume_website/widgets/projects_section.dart';
 import 'package:resume_website/widgets/site_nav.dart';
-import 'package:resume_website/widgets/skills_section.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -17,25 +15,18 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final _scrollController = ScrollController();
-  final _sectionKeys = <String, GlobalKey>{
-    'hero': GlobalKey(),
-    'about': GlobalKey(),
-    'experience': GlobalKey(),
-    'projects': GlobalKey(),
-    'skills': GlobalKey(),
-    'contact': GlobalKey(),
-  };
-
-  bool _navElevated = false;
-
   static const _navItems = [
-    NavItem('About', 'about'),
+    NavItem('Work', 'work'),
+    NavItem('Expertise', 'expertise'),
     NavItem('Experience', 'experience'),
-    NavItem('Projects', 'projects'),
-    NavItem('Skills', 'skills'),
     NavItem('Contact', 'contact'),
   ];
+
+  final _scrollController = ScrollController();
+  final _sectionKeys = {for (final item in _navItems) item.id: GlobalKey()};
+
+  bool _navElevated = false;
+  String? _activeId;
 
   @override
   void initState() {
@@ -52,65 +43,95 @@ class _HomePageState extends State<HomePage> {
   }
 
   void _onScroll() {
-    final elevated = _scrollController.offset > 24;
-    if (elevated != _navElevated) {
-      setState(() => _navElevated = elevated);
+    final elevated = _scrollController.offset > 8;
+    final active = _currentSection();
+    if (elevated != _navElevated || active != _activeId) {
+      setState(() {
+        _navElevated = elevated;
+        _activeId = active;
+      });
     }
   }
 
+  String? _currentSection() {
+    final position = _scrollController.position;
+    if (position.pixels >= position.maxScrollExtent - 4) {
+      return _navItems.last.id;
+    }
+    final threshold = MediaQuery.sizeOf(context).height * 0.35;
+    String? current;
+    for (final item in _navItems) {
+      final box = _sectionKeys[item.id]?.currentContext?.findRenderObject();
+      if (box is! RenderBox || !box.attached) continue;
+      if (box.localToGlobal(Offset.zero).dy <= threshold) current = item.id;
+    }
+    return current;
+  }
+
   Future<void> _scrollTo(String id) async {
-    final key = _sectionKeys[id];
-    final context = key?.currentContext;
-    if (context == null) return;
-    final phone = MediaQuery.sizeOf(this.context).width < Breakpoints.phone;
-    await Scrollable.ensureVisible(
-      context,
-      duration: const Duration(milliseconds: 650),
-      curve: Curves.easeInOutCubic,
-      alignment: id == 'hero' ? 0 : (phone ? 0.04 : 0.08),
-    );
+    final duration = context.reduceMotion
+        ? Duration.zero
+        : const Duration(milliseconds: 600);
+    final double offset;
+    if (id == 'top') {
+      offset = 0;
+    } else {
+      final box = _sectionKeys[id]?.currentContext?.findRenderObject();
+      if (box is! RenderBox) return;
+      final navHeight = context.isPhone ? SiteNav.phoneHeight : SiteNav.height;
+      offset = (_scrollController.offset +
+              box.localToGlobal(Offset.zero).dy -
+              navHeight +
+              1)
+          .clamp(0.0, _scrollController.position.maxScrollExtent);
+    }
+    if (duration == Duration.zero) {
+      _scrollController.jumpTo(offset);
+    } else {
+      await _scrollController.animateTo(
+        offset,
+        duration: duration,
+        curve: Curves.easeInOutCubic,
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.foam,
+      backgroundColor: AppColors.paper,
       body: Stack(
         children: [
           Positioned.fill(
-            child: SingleChildScrollView(
+            child: Scrollbar(
               controller: _scrollController,
-              child: Column(
-                children: [
-                  KeyedSubtree(
-                    key: _sectionKeys['hero'],
-                    child: HeroSection(
-                      onViewWork: () => _scrollTo('projects'),
+              child: SingleChildScrollView(
+                controller: _scrollController,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    HeroSection(
+                      onViewWork: () => _scrollTo('work'),
                       onContact: () => _scrollTo('contact'),
                     ),
-                  ),
-                  KeyedSubtree(
-                    key: _sectionKeys['about'],
-                    child: const AboutSection(),
-                  ),
-                  KeyedSubtree(
-                    key: _sectionKeys['experience'],
-                    child: const ExperienceSection(),
-                  ),
-                  KeyedSubtree(
-                    key: _sectionKeys['projects'],
-                    child: const ProjectsSection(),
-                  ),
-                  KeyedSubtree(
-                    key: _sectionKeys['skills'],
-                    child: const SkillsSection(),
-                  ),
-                  const EducationSection(),
-                  KeyedSubtree(
-                    key: _sectionKeys['contact'],
-                    child: const ContactSection(),
-                  ),
-                ],
+                    KeyedSubtree(
+                      key: _sectionKeys['work'],
+                      child: const ProjectsSection(),
+                    ),
+                    KeyedSubtree(
+                      key: _sectionKeys['expertise'],
+                      child: const ExpertiseSection(),
+                    ),
+                    KeyedSubtree(
+                      key: _sectionKeys['experience'],
+                      child: const ExperienceSection(),
+                    ),
+                    KeyedSubtree(
+                      key: _sectionKeys['contact'],
+                      child: const ContactSection(),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
@@ -120,6 +141,7 @@ class _HomePageState extends State<HomePage> {
             right: 0,
             child: SiteNav(
               elevated: _navElevated,
+              activeId: _activeId,
               items: _navItems,
               onNavigate: _scrollTo,
             ),
